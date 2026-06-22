@@ -1,0 +1,28 @@
+{
+  "candidate_name": "MOKKA RADHIKA",
+  "total_score": 0,
+  "percentage": 0.0,
+  "rating": "Needs Improvement",
+  "question_scores": [
+    {
+      "question": "What do you know about our company?",
+      "score": 0
+    },
+    {
+      "question": "Where do you see yourself in five years?",
+      "score": 0
+    },
+    {
+      "question": "What makes you unique?",
+      "score": 0
+    },
+    {
+      "question": "How do you prioritize your work?",
+      "score": 0
+    },
+    {
+      "question": "Do you prefer working alone or in a team?",
+      "score": 0
+    }
+  ]
+}

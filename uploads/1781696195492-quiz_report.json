@@ -1,0 +1,79 @@
+{
+  "topic": "python",
+  "score": 10,
+  "total_questions": 10,
+  "percentage": 100.0,
+  "rating": "Excellent",
+  "results": [
+    {
+      "question": "What is Python?",
+      "user_answer": "A",
+      "correct_answer": "A",
+      "explanation": "Python is a programming language.",
+      "is_correct": true
+    },
+    {
+      "question": "What is the print function used for in Python?",
+      "user_answer": "B",
+      "correct_answer": "B",
+      "explanation": "The print function is used to display output in Python.",
+      "is_correct": true
+    },
+    {
+      "question": "What is the purpose of the import statement in Python?",
+      "user_answer": "B",
+      "correct_answer": "B",
+      "explanation": "The import statement is used to import modules in Python.",
+      "is_correct": true
+    },
+    {
+      "question": "What is a list in Python?",
+      "user_answer": "C",
+      "correct_answer": "C",
+      "explanation": "A list is a collection of items in Python.",
+      "is_correct": true
+    },
+    {
+      "question": "What is the purpose of the len function in Python?",
+      "user_answer": "C",
+      "correct_answer": "C",
+      "explanation": "The len function is used to get the length of a string or list in Python.",
+      "is_correct": true
+    },
+    {
+      "question": "What is a dictionary in Python?",
+      "user_answer": "C",
+      "correct_answer": "C",
+      "explanation": "A dictionary is a collection of key-value pairs in Python.",
+      "is_correct": true
+    },
+    {
+      "question": "What is the purpose of the if statement in Python?",
+      "user_answer": "C",
+      "correct_answer": "C",
+      "explanation": "The if statement is used to make decisions based on conditions in Python.",
+      "is_correct": true
+    },
+    {
+      "question": "What is a for loop used for in Python?",
+      "user_answer": "C",
+      "correct_answer": "C",
+      "explanation": "A for loop is used to iterate over a sequence in Python.",
+      "is_correct": true
+    },
+    {
+      "question": "What is the purpose of the def statement in Python?",
+      "user_answer": "C",
+      "correct_answer": "C",
+      "explanation": "The def statement is used to define a function in Python.",
+      "is_correct": true
+    },
+    {
+      "question": "What is the purpose of the try-except block in Python?",
+      "user_answer": "C",
+      "correct_answer": "C",
+      "explanation": "The try-except block is used to handle exceptions and errors in Python.",
+      "is_correct": true
+    }
+  ]
+}

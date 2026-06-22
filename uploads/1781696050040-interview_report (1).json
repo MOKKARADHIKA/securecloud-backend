@@ -1,0 +1,28 @@
+{
+  "candidate_name": "MOKKA RADHIKA",
+  "total_score": 40,
+  "percentage": 80.0,
+  "rating": "Good",
+  "question_scores": [
+    {
+      "question": "Do you have any questions for us?",
+      "score": 8
+    },
+    {
+      "question": "What are your strengths?",
+      "score": 8
+    },
+    {
+      "question": "What are your career goals?",
+      "score": 8
+    },
+    {
+      "question": "How do you learn new skills?",
+      "score": 8
+    },
+    {
+      "question": "What are your weaknesses?",
+      "score": 8
+    }
+  ]
+}
