@@ -63,6 +63,9 @@ const fileRoutes = require("./routes/fileRoutes");
 
 const app = express();
 
+app.use("/api/auth", authRoutes);
+app.use("/api/files", fileRoutes);
+
 connectDB(); // ✅ important
 
 /* =========================
