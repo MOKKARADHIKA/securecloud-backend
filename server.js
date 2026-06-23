@@ -56,11 +56,14 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const path = require("path");
 require("dotenv").config();
+const connectDB = require("./db");
 
 const authRoutes = require("./routes/auth");
 const fileRoutes = require("./routes/fileRoutes");
 
 const app = express();
+
+connectDB(); // ✅ important
 
 /* =========================
    CORS CONFIG (FIXED)
@@ -116,9 +119,9 @@ app.use("/api/files", fileRoutes);
    MONGODB
 ========================= */
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.log(err));
+// mongoose.connect(process.env.MONGO_URI)
+//   .then(() => console.log("MongoDB Connected"))
+//   .catch(err => console.log(err));
 
 /* =========================
    TEST ROUTE
