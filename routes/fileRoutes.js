@@ -136,29 +136,59 @@ router.put(
 
 const fs = require("fs");
 
+// router.get(
+//   "/download/:filename",
+//   authMiddleware,
+//   roleMiddleware("DATA_USER"),
+//   (req, res) => {
+
+//     const filePath = path.join(
+//       __dirname,
+//       "../uploads",
+//       req.params.filename
+//     );
+
+//     console.log("Downloading:", filePath);
+
+//     if (!fs.existsSync(filePath)) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "File not found",
+//         path: filePath
+//       });
+//     }
+
+//     res.download(filePath);
+//   }
+// );
+
 router.get(
-  "/download/:filename",
+  "/download/:id",
   authMiddleware,
   roleMiddleware("DATA_USER"),
-  (req, res) => {
+  async (req, res) => {
+    try {
+      const file = await File.findById(req.params.id);
 
-    const filePath = path.join(
-      __dirname,
-      "../uploads",
-      req.params.filename
-    );
+      if (!file) {
+        return res.status(404).json({
+          success: false,
+          message: "File not found",
+        });
+      }
 
-    console.log("Downloading:", filePath);
+      return res.json({
+        success: true,
+        downloadUrl: file.filePath,
+      });
 
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
         success: false,
-        message: "File not found",
-        path: filePath
+        message: err.message,
       });
     }
-
-    res.download(filePath);
   }
 );
 

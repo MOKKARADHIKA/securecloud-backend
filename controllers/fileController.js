@@ -1,5 +1,7 @@
 const File = require("../models/File");
 const CryptoJS = require("crypto-js");
+const cloudinary = require("../config/cloudinary");
+const fs = require("fs");
 
 // // UPLOAD FILE
 // const uploadFile = async (req, res) => {
@@ -64,16 +66,63 @@ const CryptoJS = require("crypto-js");
 // };
 
 
+// const uploadFile = async (req, res) => {
+//   try {
+
+//     console.log("REQ.FILE =", req.file);
+//     console.log("REQ.BODY =", req.body);
+
+//     if (!req.file) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "No file received by multer"
+//       });
+//     }
+
+//     const keywordArray = (req.body.keywords || "")
+//       .toString()
+//       .split(",")
+//       .map((k) => k.trim())
+//       .filter(Boolean);
+
+//     const encryptedName = CryptoJS.AES.encrypt(
+//       req.file.originalname,
+//       process.env.AES_SECRET
+//     ).toString();
+
+//     // remaining code...
+
+//     const file = await File.create({
+//       fileName: req.file.originalname,
+//       storedFileName: req.file.filename,
+//       encryptedFileName: encryptedName,
+//       filePath: req.file.path,
+//       keywords: keywordArray,
+//     });
+
+//     res.json({
+//       success: true,
+//       file,
+//     });
+
+//   } catch (err) {
+//     console.log("UPLOAD ERROR =", err);
+
+//     res.status(500).json({
+//       success: false,
+//       message: err.message,
+//     });
+//   }
+// };
+
+
+
 const uploadFile = async (req, res) => {
   try {
-
-    console.log("REQ.FILE =", req.file);
-    console.log("REQ.BODY =", req.body);
-
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: "No file received by multer"
+        message: "No file received",
       });
     }
 
@@ -83,18 +132,25 @@ const uploadFile = async (req, res) => {
       .map((k) => k.trim())
       .filter(Boolean);
 
+    // Upload to Cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "auto",
+      folder: "securecloud",
+    });
+
+    // Remove local file after successful upload
+    fs.unlinkSync(req.file.path);
+
     const encryptedName = CryptoJS.AES.encrypt(
       req.file.originalname,
       process.env.AES_SECRET
     ).toString();
 
-    // remaining code...
-
     const file = await File.create({
       fileName: req.file.originalname,
-      storedFileName: req.file.filename,
+      storedFileName: result.public_id,
       encryptedFileName: encryptedName,
-      filePath: req.file.path,
+      filePath: result.secure_url,
       keywords: keywordArray,
     });
 
@@ -104,7 +160,7 @@ const uploadFile = async (req, res) => {
     });
 
   } catch (err) {
-    console.log("UPLOAD ERROR =", err);
+    console.log(err);
 
     res.status(500).json({
       success: false,
@@ -112,6 +168,12 @@ const uploadFile = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
 
 // GET ALL FILES
 const getAllFiles = async (req, res) => {
