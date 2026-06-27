@@ -35,6 +35,10 @@
 // module.exports = authMiddleware;
 const jwt = require("jsonwebtoken");
 
+
+// console.log("USER FROM TOKEN:", req.user);
+// console.log("ROLE:", req.user.role);
+
 const authMiddleware = (req, res, next) => {
   try {
     // ✅ Get Authorization header
@@ -58,12 +62,24 @@ const authMiddleware = (req, res, next) => {
     }
 
     // ✅ Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // attach user to request
-    req.user = decoded;
+    // // attach user to request
+    // req.user = decoded;
 
-    next();
+    // next();
+
+    // ✅ Verify token
+const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+// 👇 Add these logs
+console.log("Authorization Header:", authHeader);
+console.log("Decoded Token:", decoded);
+
+// attach user to request
+req.user = decoded;
+
+next();
 
   } catch (error) {
     return res.status(401).json({

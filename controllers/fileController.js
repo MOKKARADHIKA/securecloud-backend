@@ -114,6 +114,36 @@ const fs = require("fs");
 //     });
 //   }
 // };
+const downloadFile = async (req, res) => {
+  try {
+    const file = await File.findById(req.params.id);
+
+    if (!file) {
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+      });
+    }
+
+    return res.json({
+      success: true,
+      downloadUrl: file.filePath,
+    });
+
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+
+
+
+
+
 
 
 
@@ -134,7 +164,7 @@ const uploadFile = async (req, res) => {
 
     // Upload to Cloudinary
    const result = await cloudinary.uploader.upload(req.file.path, {
-  resource_type: "raw",   // FIX for PDF download issue
+  resource_type: "auto",   // FIX for PDF download issue
   folder: "securecloud",
 });
 
@@ -289,4 +319,5 @@ module.exports = {
   searchFiles,
   deleteFile,
     renameFile,
+      downloadFile,
 };

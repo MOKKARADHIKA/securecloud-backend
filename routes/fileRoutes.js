@@ -11,6 +11,7 @@ const {
   uploadFile,
   deleteFile,
    renameFile,
+     downloadFile,
 } = require("../controllers/fileController");
 
 /* =========================
@@ -165,7 +166,7 @@ const fs = require("fs");
 router.get(
   "/download/:id",
   authMiddleware,
-  roleMiddleware("DATA_USER"),
+  roleMiddleware("DATA_USER", "DATA_OWNER"),
   async (req, res) => {
     try {
       const file = await File.findById(req.params.id);
@@ -184,7 +185,7 @@ router.get(
 
     } catch (err) {
       console.log(err);
-      res.status(500).json({
+      return res.status(500).json({
         success: false,
         message: err.message,
       });
