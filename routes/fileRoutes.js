@@ -43,14 +43,19 @@ const upload = multer({ storage });
 
 //   uploadFile
 // );
+
 router.post(
   "/upload",
   authMiddleware,
   roleMiddleware("DATA_OWNER"),
   upload.single("file"),
+  (req, res, next) => {
+    console.log("FILE:", req.file);
+    console.log("BODY:", req.body);
+    next();
+  },
   uploadFile
 );
-
 /* =========================
    GET ALL FILES
 ========================= */
@@ -129,6 +134,8 @@ router.put(
 
 
 
+const fs = require("fs");
+
 router.get(
   "/download/:filename",
   authMiddleware,
@@ -140,6 +147,16 @@ router.get(
       "../uploads",
       req.params.filename
     );
+
+    console.log("Downloading:", filePath);
+
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+        path: filePath
+      });
+    }
 
     res.download(filePath);
   }

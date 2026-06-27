@@ -1,9 +1,82 @@
 const File = require("../models/File");
 const CryptoJS = require("crypto-js");
 
-// UPLOAD FILE
+// // UPLOAD FILE
+// const uploadFile = async (req, res) => {
+//   try {
+//     const keywordArray = (req.body.keywords || "")
+//       .toString()
+//       .split(",")
+//       .map((k) => k.trim())
+//       .filter(Boolean);
+
+//     const encryptedName = CryptoJS.AES.encrypt(
+//       req.file.originalname,
+//       process.env.AES_SECRET
+//     ).toString();
+
+// const uploadFile = async (req, res) => {
+//   try {
+
+//     if (!req.file) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "No file received"
+//       });
+//     }
+
+//     console.log("FILE =", req.file);
+//     console.log("BODY =", req.body);
+
+//     const keywordArray = (req.body.keywords || "")
+//       .toString()
+//       .split(",")
+//       .map((k) => k.trim())
+//       .filter(Boolean);
+
+//     const encryptedName = CryptoJS.AES.encrypt(
+//       req.file.originalname,
+//       process.env.AES_SECRET
+//     ).toString();
+
+//     // rest of code...
+
+//     const file = await File.create({
+//   fileName: req.file.originalname,
+//   storedFileName: req.file.filename, // IMPORTANT
+//   encryptedFileName: encryptedName,
+//   filePath: req.file.path,
+//   keywords: keywordArray,
+// });
+
+//     res.json({
+//       success: true,
+//       file,
+//     });
+//   } catch (err) {
+//     console.log(err);
+
+//     res.status(500).json({
+//       success: false,
+//       message: err.message,
+//     });
+//   }
+// };
+
+
 const uploadFile = async (req, res) => {
   try {
+
+    console.log("REQ.FILE =", req.file);
+    console.log("REQ.BODY =", req.body);
+
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: "No file received by multer"
+      });
+    }
+
     const keywordArray = (req.body.keywords || "")
       .toString()
       .split(",")
@@ -15,20 +88,23 @@ const uploadFile = async (req, res) => {
       process.env.AES_SECRET
     ).toString();
 
+    // remaining code...
+
     const file = await File.create({
-  fileName: req.file.originalname,
-  storedFileName: req.file.filename, // IMPORTANT
-  encryptedFileName: encryptedName,
-  filePath: req.file.path,
-  keywords: keywordArray,
-});
+      fileName: req.file.originalname,
+      storedFileName: req.file.filename,
+      encryptedFileName: encryptedName,
+      filePath: req.file.path,
+      keywords: keywordArray,
+    });
 
     res.json({
       success: true,
       file,
     });
+
   } catch (err) {
-    console.log(err);
+    console.log("UPLOAD ERROR =", err);
 
     res.status(500).json({
       success: false,
