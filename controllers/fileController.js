@@ -133,10 +133,10 @@ const uploadFile = async (req, res) => {
       .filter(Boolean);
 
     // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      resource_type: "auto",
-      folder: "securecloud",
-    });
+   const result = await cloudinary.uploader.upload(req.file.path, {
+  resource_type: "raw",   // FIX for PDF download issue
+  folder: "securecloud",
+});
 
     // Remove local file after successful upload
     fs.unlinkSync(req.file.path);
