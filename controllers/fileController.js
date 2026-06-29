@@ -266,7 +266,6 @@ const downloadFile = async (req, res) => {
 //   }
 // };
 
-
 const uploadFile = async (req, res) => {
   try {
     if (!req.file) {
@@ -276,66 +275,65 @@ const uploadFile = async (req, res) => {
       });
     }
 
+    console.log("FILE RECEIVED ✔", req.file.originalname);
+    console.log("BUFFER EXISTS ✔", !!req.file.buffer);
+
     const keywordArray = (req.body.keywords || "")
       .split(",")
       .map(k => k.trim())
       .filter(Boolean);
 
-    // const fileBuffer = fs.readFileSync(req.file.path);
+    // IMPORTANT: use buffer (NOT fs)
     const fileBuffer = req.file.buffer;
 
-    const fileName = Date.now() + "-" + req.file.originalname;
+    const fileName = `${Date.now()}-${req.file.originalname}`;
 
-    // const { error } = await supabase.storage
-    //   .from("securecloud")
-    //   .upload(fileName, fileBuffer, {
-    //     contentType: req.file.mimetype,
-    //   });
-
-
-    const { error } = await supabase.storage
-  .from("securecloud")
-  .upload(fileName, fileBuffer, {
-    contentType: req.file.mimetype,
-    upsert: false,
-  });
-
-    // fs.unlinkSync(req.file.path);
-
-    if (error) throw error;
-
-    const { data } = supabase.storage
+    // SUPABASE UPLOAD
+    const { data, error } = await supabase.storage
       .from("securecloud")
-      .getPublicUrl(fileName);
+      .upload(fileName, fileBuffer, {
+        contentType: req.file.mimetype,
+        upsert: false
+      });
 
+    if (error) {
+      console.log("SUPABASE ERROR ❌", error);
+      return res.status(500).json({ success: false, message: error.message });
+    }
+
+    // PUBLIC URL
+    const publicUrl = supabase.storage
+      .from("securecloud")
+      .getPublicUrl(fileName).data.publicUrl;
+
+    // OPTIONAL ENCRYPTION
     const encryptedName = CryptoJS.AES.encrypt(
       req.file.originalname,
       process.env.AES_SECRET
     ).toString();
 
+    // SAVE TO MONGO
     const file = await File.create({
       fileName: req.file.originalname,
       storedFileName: fileName,
       encryptedFileName: encryptedName,
-      filePath: data.publicUrl,
+      filePath: publicUrl,
       keywords: keywordArray,
     });
 
-    res.json({
+    return res.json({
       success: true,
       file,
     });
 
   } catch (err) {
-    console.log(err);
-
-    res.status(500).json({
+    console.log("UPLOAD ERROR ❌", err);
+    return res.status(500).json({
       success: false,
       message: err.message,
     });
   }
 };
-
 
 
 // GET ALL FILES
