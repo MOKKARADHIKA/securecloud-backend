@@ -72,15 +72,13 @@ const app = express();
    CORS
 ========================= */
 app.use(cors({
-  origin: [
-    "http://localhost:5174",
-    "https://securecloud-frontend.vercel.app"
-  ],
+  origin: "*",   // TEMP FIX (IMPORTANT for debugging)
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.options("*", cors());
+
 /* =========================
    MIDDLEWARE
 ========================= */
@@ -95,7 +93,7 @@ app.use(express.urlencoded({ extended: true }));
 /* =========================
    DB (MOVE INSIDE SAFELY)
 ========================= */
-const connectDB = require("./db");
+
 
 /* Lazy DB connection (IMPORTANT FIX) */
 let isConnected = false;
@@ -146,10 +144,10 @@ app.get("/debug-env", (req, res) => {
 
 const PORT = process.env.PORT || 5001;
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
+// if (require.main === module) {
+//   app.listen(PORT, () => {
+//     console.log(`Server running on port ${PORT}`);
+//   });
+// }
 
 module.exports = app;
