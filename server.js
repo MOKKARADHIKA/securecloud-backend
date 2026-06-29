@@ -51,7 +51,7 @@
 // });
 
 const express = require("express");
-// const cors = require("cors");
+const cors = require("cors");
 
 const path = require("path");
 
@@ -71,44 +71,18 @@ connectDB();
 /* =========================
    CORS
 ========================= */
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://securecloud-frontend.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
 
-const allowedOrigins = [
-  "http://localhost:5173",
-  "https://securecloud-frontend.vercel.app"
-];
-
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
-
-// app.use(
-//   cors({
-//     origin: function (origin, callback) {
-//       // allow Postman / server-to-server
-//       if (!origin) return callback(null, true);
-
-//       if (allowedOrigins.includes(origin)) {
-//         return callback(null, true);
-//       }
-
-//       return callback(null, true); // TEMP: allow all (safe for debugging)
-//     },
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//     credentials: true,
-//   })
-// );
-
-/* IMPORTANT: handle preflight requests */
-// app.options("*", cors());
+app.options("*", cors());
 
 
 /* =========================
