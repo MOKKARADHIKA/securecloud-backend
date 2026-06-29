@@ -281,17 +281,26 @@ const uploadFile = async (req, res) => {
       .map(k => k.trim())
       .filter(Boolean);
 
-    const fileBuffer = fs.readFileSync(req.file.path);
+    // const fileBuffer = fs.readFileSync(req.file.path);
+    const fileBuffer = req.file.buffer;
 
     const fileName = Date.now() + "-" + req.file.originalname;
 
-    const { error } = await supabase.storage
-      .from("securecloud")
-      .upload(fileName, fileBuffer, {
-        contentType: req.file.mimetype,
-      });
+    // const { error } = await supabase.storage
+    //   .from("securecloud")
+    //   .upload(fileName, fileBuffer, {
+    //     contentType: req.file.mimetype,
+    //   });
 
-    fs.unlinkSync(req.file.path);
+
+    const { error } = await supabase.storage
+  .from("securecloud")
+  .upload(fileName, fileBuffer, {
+    contentType: req.file.mimetype,
+    upsert: false,
+  });
+
+    // fs.unlinkSync(req.file.path);
 
     if (error) throw error;
 
