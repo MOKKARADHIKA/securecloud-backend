@@ -135,6 +135,22 @@ router.put(
 
 
 
+
+
+
+// 👇 ADD THIS HERE
+router.get("/debug-supabase", async (req, res) => {
+  console.log("URL:", process.env.SUPABASE_URL);
+  console.log("KEY LAST 10:", process.env.SUPABASE_SERVICE_KEY?.slice(-10));
+
+  const { data, error } = await supabase.storage.listBuckets();
+
+  res.json({ data, error });
+});
+
+
+
+
 const fs = require("fs");
 
 // router.get(
@@ -163,34 +179,51 @@ const fs = require("fs");
 //   }
 // );
 
+
+// router.get(
+//   "/download/:id",
+//   authMiddleware,
+//   roleMiddleware("DATA_USER", "DATA_OWNER"),
+//   async (req, res) => {
+//     try {
+//       const file = await File.findById(req.params.id);
+
+//       if (!file) {
+//         return res.status(404).json({
+//           success: false,
+//           message: "File not found",
+//         });
+//       }
+
+//       const filePath = path.join(
+//         __dirname,
+//         "../uploads",
+//         file.storedFileName   // ✅ FIX HERE
+//       );
+
+//       if (!fs.existsSync(filePath)) {
+//         return res.status(404).json({
+//           success: false,
+//           message: "File not found on server",
+//         });
+//       }
+
+//       return res.download(filePath);
+
+//     } catch (err) {
+//       console.log(err);
+//       res.status(500).json({
+//         success: false,
+//         message: err.message,
+//       });
+//     }
+//   }
+// );
 router.get(
   "/download/:id",
   authMiddleware,
   roleMiddleware("DATA_USER", "DATA_OWNER"),
-  async (req, res) => {
-    try {
-      const file = await File.findById(req.params.id);
-
-      if (!file) {
-        return res.status(404).json({
-          success: false,
-          message: "File not found",
-        });
-      }
-
-      return res.json({
-        success: true,
-        downloadUrl: file.filePath,
-      });
-
-    } catch (err) {
-      console.log(err);
-      return res.status(500).json({
-        success: false,
-        message: err.message,
-      });
-    }
-  }
+  downloadFile
 );
 
 module.exports = router;

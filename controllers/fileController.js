@@ -1,7 +1,24 @@
+
+
+
+
+
+
 const File = require("../models/File");
 const CryptoJS = require("crypto-js");
-const cloudinary = require("../config/cloudinary");
+const supabase = require("../config/supabase");
 const fs = require("fs");
+
+const testSupabase = async () => {
+  console.log("SUPABASE URL =", process.env.SUPABASE_URL);
+
+  const { data, error } = await supabase.storage.listBuckets();
+
+  console.log("BUCKETS =", data);
+  console.log("ERROR =", error);
+};
+
+testSupabase();
 
 // // UPLOAD FILE
 // const uploadFile = async (req, res) => {
@@ -114,6 +131,43 @@ const fs = require("fs");
 //     });
 //   }
 // };
+
+// ------------------------------------------DOWNLOAD FILE------------------------------------
+
+
+
+// const downloadFile = async (req, res) => {
+//   try {
+//     const file = await File.findById(req.params.id);
+
+//     if (!file) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "File not found",
+//       });
+//     }
+
+//     const downloadUrl = cloudinary.url(file.storedFileName, {
+//       resource_type: "raw",
+//       type: "upload",
+//       flags: "attachment",
+//       secure: true,
+//     });
+
+//     res.json({
+//       success: true,
+//       downloadUrl,
+//     });
+
+//   } catch (err) {
+//     console.log(err);
+
+//     res.status(500).json({
+//       success: false,
+//       message: err.message,
+//     });
+//   }
+// };
 const downloadFile = async (req, res) => {
   try {
     const file = await File.findById(req.params.id);
@@ -125,26 +179,92 @@ const downloadFile = async (req, res) => {
       });
     }
 
+    const { data } = supabase.storage
+      .from("securecloud")
+      .getPublicUrl(file.storedFileName);
+
     return res.json({
       success: true,
-      downloadUrl: file.filePath,
+      downloadUrl: data.publicUrl,
     });
 
   } catch (err) {
     console.log(err);
-    return res.status(500).json({
-      success: false,
-      message: err.message,
-    });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
 
 
 
+// ----------------UPLOAD FILE-------------------------------
 
 
 
+
+// const uploadFile = async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "No file received",
+//       });
+//     }
+
+//     const keywordArray = (req.body.keywords || "")
+//       .toString()
+//       .split(",")
+//       .map((k) => k.trim())
+//       .filter(Boolean);
+
+//     // Upload file to Cloudinary
+//     const result = await cloudinary.uploader.upload(req.file.path, {
+//       resource_type: "raw",      // for PDFs and documents
+//       folder: "securecloud",
+//       use_filename: true,
+//       unique_filename: true,
+//     });
+
+//     console.log("Cloudinary Upload Result:");
+// console.log(result);
+
+//     // Delete local temporary file
+//     fs.unlinkSync(req.file.path);
+
+//     const encryptedName = CryptoJS.AES.encrypt(
+//       req.file.originalname,
+//       process.env.AES_SECRET
+//     ).toString();
+
+//     // const file = await File.create({
+//     //   fileName: req.file.originalname,
+//     //   storedFileName: result.public_id,
+//     //   encryptedFileName: encryptedName,
+//     //   filePath: result.secure_url,
+//     //   keywords: keywordArray,
+//     // });
+
+//     const file = await File.create({
+//   fileName: req.file.originalname,
+//   storedFileName: result.public_id,
+//   encryptedFileName: encryptedName,
+//   filePath: result.secure_url,
+//   keywords: keywordArray,
+// });
+//     res.json({
+//       success: true,
+//       file,
+//     });
+
+//   } catch (err) {
+//     console.log("UPLOAD ERROR:", err);
+
+//     res.status(500).json({
+//       success: false,
+//       message: err.message,
+//     });
+//   }
+// };
 
 
 const uploadFile = async (req, res) => {
@@ -157,19 +277,27 @@ const uploadFile = async (req, res) => {
     }
 
     const keywordArray = (req.body.keywords || "")
-      .toString()
       .split(",")
-      .map((k) => k.trim())
+      .map(k => k.trim())
       .filter(Boolean);
 
-    // Upload to Cloudinary
-   const result = await cloudinary.uploader.upload(req.file.path, {
-  resource_type: "auto",   // FIX for PDF download issue
-  folder: "securecloud",
-});
+    const fileBuffer = fs.readFileSync(req.file.path);
 
-    // Remove local file after successful upload
+    const fileName = Date.now() + "-" + req.file.originalname;
+
+    const { error } = await supabase.storage
+      .from("securecloud")
+      .upload(fileName, fileBuffer, {
+        contentType: req.file.mimetype,
+      });
+
     fs.unlinkSync(req.file.path);
+
+    if (error) throw error;
+
+    const { data } = supabase.storage
+      .from("securecloud")
+      .getPublicUrl(fileName);
 
     const encryptedName = CryptoJS.AES.encrypt(
       req.file.originalname,
@@ -178,9 +306,9 @@ const uploadFile = async (req, res) => {
 
     const file = await File.create({
       fileName: req.file.originalname,
-      storedFileName: result.public_id,
+      storedFileName: fileName,
       encryptedFileName: encryptedName,
-      filePath: result.secure_url,
+      filePath: data.publicUrl,
       keywords: keywordArray,
     });
 
@@ -198,10 +326,6 @@ const uploadFile = async (req, res) => {
     });
   }
 };
-
-
-
-
 
 
 

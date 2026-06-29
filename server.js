@@ -62,6 +62,8 @@ const connectDB = require("./db");
 const authRoutes = require("./routes/auth");
 const fileRoutes = require("./routes/fileRoutes");
 
+const supabase = require("./config/supabase");
+
 const app = express();
 
 connectDB();
@@ -103,6 +105,7 @@ app.use(express.urlencoded({ extended: true }));
    STATIC FILES
 ========================= */
 
+// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 /* =========================
