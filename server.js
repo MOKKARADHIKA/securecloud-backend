@@ -71,6 +71,7 @@ connectDB();
 /* =========================
    CORS
 ========================= */
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://securecloud-frontend.vercel.app"
@@ -79,13 +80,14 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
+      // allow Postman / server-to-server
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
-      return callback(null, true); // TEMP FIX (allow all for debugging)
+      return callback(null, true); // TEMP: allow all (safe for debugging)
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -93,7 +95,10 @@ app.use(
   })
 );
 
+/* IMPORTANT: handle preflight requests */
 app.options("*", cors());
+
+
 /* =========================
    MIDDLEWARE
 ========================= */
